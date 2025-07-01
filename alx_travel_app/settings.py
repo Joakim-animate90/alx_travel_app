@@ -11,21 +11,25 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Initialize environment variables
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-%ght)m&plo96!v=6_($4#$soopu0t_pavx8ha!t_zqywh225u9"
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="django-insecure-%ght)m&plo96!v=6_($4#$soopu0t_pavx8ha!t_zqywh225u9")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DJANGO_DEBUG", default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 
 
 # Application definition
@@ -37,9 +41,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    "corsheaders",
+    "drf_yasg",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -69,13 +77,26 @@ TEMPLATES = [
 WSGI_APPLICATION = "alx_travel_app.wsgi.application"
 
 
+# Debug: Print MySQL environment variables
+print("DJANGO DEBUG: MYSQL_USER =", repr(env("MYSQL_USER", default="not set")))
+print("DJANGO DEBUG: MYSQL_PASSWORD =", repr(env("MYSQL_PASSWORD", default="not set")))
+print("DJANGO DEBUG: MYSQL_DATABASE =", repr(env("MYSQL_DATABASE", default="not set")))
+
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": env("MYSQL_DATABASE", default="alx_travel_db"),
+        "USER": env("MYSQL_USER", default="root"),
+        "PASSWORD": env("MYSQL_PASSWORD", default=""),
+        "HOST": env("MYSQL_HOST", default="localhost"),
+        "PORT": env("MYSQL_PORT", default="3306"),
+        "OPTIONS": {
+            "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+            "unix_socket": "/var/run/mysqld/mysqld.sock",
+        },
     }
 }
 
@@ -115,6 +136,29 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+
+# Django REST Framework settings
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+}
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Celery settings
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="amqp://localhost")
+
+# drf-yasg settings (Swagger)
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
