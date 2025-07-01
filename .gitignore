@@ -1,2 +1,42 @@
-myenv
+# Virtual environments
+myenv/
+.venv/
+env/
+venv/
+
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django migrations cache
+*/migrations/__pycache__/
+
+# Environment files
+.env
+.env.*
+
+# SQLite database
+db.sqlite3
+
+# VSCode settings
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Pip and build artifacts
+*.egg-info/
+dist/
+build/
+
+# Coverage and test output
+.coverage
+htmlcov/
+
+# Log files
+*.log
+
+# Project-specific
 .qodo
