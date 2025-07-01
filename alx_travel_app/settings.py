@@ -77,11 +77,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "alx_travel_app.wsgi.application"
 
 
-# Debug: Print MySQL environment variables
-print("DJANGO DEBUG: MYSQL_USER =", repr(env("MYSQL_USER", default="not set")))
-print("DJANGO DEBUG: MYSQL_PASSWORD =", repr(env("MYSQL_PASSWORD", default="not set")))
-print("DJANGO DEBUG: MYSQL_DATABASE =", repr(env("MYSQL_DATABASE", default="not set")))
-
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
